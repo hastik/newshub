@@ -21,7 +21,8 @@ newshub/
 │   ├── logistika.md
 │   ├── ai.md
 │   ├── processwire.md
-│   └── gamedev.md
+│   ├── gamedev.md
+│   └── gemdevspec.md
 ├── articles/           – články organizované podle data přidání
 │   └── YYYY/
 │       └── MM/

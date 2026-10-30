@@ -116,6 +116,22 @@ categories:
     - tag: hud
       description: HUD (Heads-Up Display)
 
+  gemdevspec:
+    - tag: shallot
+      description: Shallot Engine
+    - tag: dylan-ebert
+      description: Dylan Ebert (autor, content creator)
+    - tag: changelog
+      description: Changelog, seznam změn
+    - tag: devlog
+      description: Vývojový deník, devlog
+    - tag: breaking-change
+      description: Breaking change, změna kompatibility
+    - tag: funkcionalita
+      description: Nová funkcionalita, feature
+    - tag: priklad
+      description: Příklad použití, demo
+
 cross_category:
   - tag: studie
     description: Vědecké studie, výzkum, akademické články
