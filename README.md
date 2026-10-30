@@ -2,6 +2,10 @@
 
 Kurátorovaná databáze důležitých novinek v oblastech logistiky, AI, ProcessWire a vývoje her. Repo slouží jako zdroj pravdy pro AI zpracování; na tomto základě budou později postavené weby a další pohledy.
 
+**Webová stránka:** [https://hastik.github.io/newshub/](https://hastik.github.io/newshub/)
+
+Statická webová stránka je automaticky generována při každém push do `main` větve a zobrazuje procházitelnou strukturu adresářů s vyrenderovanými články.
+
 ## Účel
 
 Sbírka článků v češtině pro Ondřeje Hastíka – product ownera v e-commerce logistice (Notino), který se zajímá o automatizaci skladů, pokročilé AI, ProcessWire CMS a začíná s vývojem her (idle games, shootery).
