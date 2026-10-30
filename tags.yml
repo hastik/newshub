@@ -1,0 +1,131 @@
+# Kontrolovaný slovník štítků pro newshub
+# Pravidla: lowercase, kebab-case, bez diakritiky
+
+categories:
+  logistika:
+    - tag: amr
+      description: Autonomous Mobile Robots – autonomní mobilní roboty
+    - tag: as-rs
+      description: Automated Storage and Retrieval Systems – automatizované regálové systémy
+    - tag: goods-to-person
+      description: Systémy přinášející zboží k pracovníkovi (G2P)
+    - tag: picking
+      description: Komisování, kompletace objednávek
+    - tag: picking-roboticky
+      description: Robotické komisování (robotic picking)
+    - tag: wms
+      description: Warehouse Management System
+    - tag: orchestrace
+      description: Orchestrace systémů, řízení toku práce
+    - tag: automatizace-skladu
+      description: Automatizace skladů obecně
+    - tag: slotting
+      description: Rozmístění zboží ve skladu (slotting strategy)
+    - tag: breakpack
+      description: Each-picking, kusové komisování
+    - tag: mikrofulfillment
+      description: Mikrofulfillment centra
+    - tag: benchmark
+      description: Porovnání, referenční měření
+    - tag: produktivita
+      description: Výkonnost, propustnost, efektivita
+    - tag: rmfs
+      description: Robotic Mobile Fulfillment System
+    - tag: raas
+      description: Robotics as a Service
+    - tag: vyklادka
+      description: Vykládka kamionů, kontejnerů
+    - tag: baleni
+      description: Balení zásilek
+    - tag: e-commerce
+      description: E-commerce logistika
+
+  ai:
+    - tag: agenti
+      description: AI agenti, autonomní systémy
+    - tag: workflow
+      description: Workflow, postupy práce s AI
+    - tag: multiagent
+      description: Systémy s více agenty
+    - tag: modely
+      description: Velké jazykové modely (LLM)
+    - tag: nastroje
+      description: AI nástroje a aplikace
+    - tag: api
+      description: API rozhraní pro AI služby
+    - tag: lokalni-ai
+      description: Lokální / on-premise AI modely
+    - tag: automatizace-kancelare
+      description: Automatizace kancelářské práce
+    - tag: vision
+      description: Počítačové vidění, vizuální AI
+    - tag: kyberbezpecnost
+      description: AI v kyberbezpečnosti
+    - tag: rag
+      description: Retrieval-Augmented Generation
+    - tag: ovladani-pocitace
+      description: Computer use, ovládání počítače AI
+
+  processwire:
+    - tag: vydani
+      description: Nová verze, release
+    - tag: dev
+      description: Vývojová verze
+    - tag: pw4
+      description: ProcessWire 4
+    - tag: modul
+      description: Modul třetí strany
+    - tag: weekly
+      description: ProcessWire Weekly
+    - tag: ryan-blog
+      description: Ryanův blog
+    - tag: podpora-db
+      description: Podpora databází (SQLite, PostgreSQL, MySQL)
+    - tag: webserver
+      description: Webové servery (nginx, Caddy, Apache)
+
+  gamedev:
+    - tag: godot
+      description: Godot Engine
+    - tag: unity
+      description: Unity Engine
+    - tag: idle
+      description: Idle/incremental hry
+    - tag: fps
+      description: First-Person Shooter
+    - tag: tutorial
+      description: Návod, tutoriál
+    - tag: design
+      description: Game design, herní mechaniky
+    - tag: plugin
+      description: Plugin, rozšíření engine
+    - tag: prestige
+      description: Prestige mechanika (idle games)
+    - tag: game-feel
+      description: Game feel, pocit ze hry
+    - tag: camera
+      description: Kamera, camera control
+    - tag: ui
+      description: Uživatelské rozhraní
+    - tag: fyzika
+      description: Herní fyzika
+    - tag: editor
+      description: Herní editor
+    - tag: zbrane
+      description: Zbraně, střelba
+    - tag: hud
+      description: HUD (Heads-Up Display)
+
+cross_category:
+  - tag: studie
+    description: Vědecké studie, výzkum, akademické články
+  - tag: vydani
+    description: Vydání nové verze produktu/nástroje
+  - tag: tutorial
+    description: Návody, tutoriály, How-to
+  - tag: case-study
+    description: Případová studie, nasazení v praxi
+  - tag: ai
+    description: AI v jiných kategoriích (logistika, gamedev)
+  - tag: vzorce
+    description: Matematické vzorce, výpočty, algoritmy
