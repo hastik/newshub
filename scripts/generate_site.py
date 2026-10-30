@@ -43,7 +43,9 @@ def load_yaml_front_matter(file_path):
 def get_html_head(title, parent_path=""):
     """Generate HTML head with title and styling."""
     # Calculate path to root for CSS
-    depth = parent_path.count('/') if parent_path else 0
+    # parent_path is like "articles/2026/10" for a file at that location
+    # We need to count directory levels to go up from the file to root
+    depth = (parent_path.count('/') + 1) if parent_path else 0
     root_path = '../' * depth if depth > 0 else './'
     
     return f"""<!DOCTYPE html>
