@@ -26,6 +26,10 @@ newshub/
 │   └── YYYY/
 │       └── MM/
 │           └── YYYY-MM-DD-slug.md
+├── studies/            – studie z intralogistiky a order pickingu
+│   ├── queue.md        – fronta studií (markdown)
+│   ├── queue.json      – fronta studií (JSON)
+│   └── YYYY-MM-DD-slug.md  – souhrny jednotlivých studií
 └── scripts/
     └── check.py        – validátor (front matter, štítky, duplikáty)
 ```
@@ -111,6 +115,82 @@ Pár vět nebo odstavec vysvětlující, proč si toho všimnout – kontext, do
 - `published` – datum publikace (pokud známe)
 - `related_urls` – další odkazy spojené s tématem
 - `follow_up_of` – odkaz na starší článek (relativní cesta od `articles/`)
+
+## Studie (studies)
+
+### Popis sekce
+
+Sekce `studies/` obsahuje kurátorovanou frontu 38 ověřených vědeckých studií k intralogistice a order pickingu. Každé pondělí ráno AI rutina:
+
+1. Vezme první položku se stavem `todo` z fronty
+2. Přečte studii a vytvoří český souhrn
+3. Uloží souhrn jako `studies/YYYY-MM-DD-slug.md`
+4. Změní stav položky na `done` v obou souborech fronty
+
+### Soubory
+
+- `studies/queue.md` – čitelná markdown tabulka fronty studií
+- `studies/queue.json` – strojově zpracovatelná verze fronty
+- `studies/YYYY-MM-DD-slug.md` – jednotlivé souhrny studií
+
+**Důležité:** Obsah fronty (`queue.md` a `queue.json`) udržuje AI rutina. Oba soubory musí zůstat konzistentní.
+
+### Formát souhrnu studie
+
+```markdown
+---
+title: Název studie
+url: https://doi.org/...
+authors: Autor, Spoluautor
+year: 2019
+venue: Název časopisu nebo konference
+added: 2026-11-04
+category: studie
+tags:
+  - studie
+  - picking
+  - amr
+queue_n: 5
+---
+
+## Kontext
+
+Kontext a pozadí studie.
+
+## Hlavní zjištění
+
+Klíčové výsledky a poznatky.
+
+## Metodika
+
+Použité metody, přístupy, experimenty.
+
+## Praktický dopad
+
+Co to znamená pro praxi, jak lze poznatky využít.
+```
+
+### Povinná pole front matter souhrnu
+
+- `title` – název studie
+- `url` – DOI nebo URL zdroje
+- `authors` – autoři studie
+- `year` – rok publikace
+- `venue` – časopis nebo konference
+- `added` – datum přidání do databáze (= datum vytvoření souhrnu)
+- `category` – vždy `studie`
+- `tags` – alespoň tag `studie` a další relevantní tagy z `tags.yml`
+- `queue_n` – pořadové číslo ze fronty (pole `n` v `queue.json`)
+
+### Konzistence fronty
+
+Obě verze fronty (`queue.md` a `queue.json`) musí být konzistentní:
+- Stejný počet položek
+- Stejná pořadová čísla (`n`)
+- Stejné hodnoty `status` (todo/done)
+- Stejné hodnoty `title`, `url`, atd.
+
+Validační skript `scripts/check.py` kontroluje konzistenci obou souborů.
 
 ## Štítky (tags)
 
