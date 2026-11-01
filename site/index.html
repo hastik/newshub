@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>newshub</title>
+  <!-- Alpine.js z CDN – žádné CSS, styling dodá Ondřej později -->
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
+</head>
+<body>
+  <!--
+    newshub frontend
+    ----------------
+    Data přijdou z data.json (generuje scripts/build_data.py v CI).
+    Filtry: kategorie (select), tag (select + klikací tagy), fulltext (title + perex).
+    Žádné styly záměrně – jen sémantické HTML a Alpine.
+  -->
+  <div x-data="newsHub()" x-init="init()">
+    <header>
+      <h1>newshub</h1>
+      <p>Kurátorované novinky z logistiky, AI, ProcessWire a vývoje her.</p>
+    </header>
+
+    <!-- Stav načítání / chyba -->
+    <template x-if="loading">
+      <p>Načítám data…</p>
+    </template>
+    <template x-if="error">
+      <p x-text="error"></p>
+    </template>
+
+    <template x-if="!loading && !error">
+      <div>
+        <!-- Filtry -->
+        <section aria-label="Filtry">
+          <h2>Filtry</h2>
+
+          <label>
+            Kategorie
+            <select x-model="selectedCategory">
+              <option value="">Všechny kategorie</option>
+              <template x-for="cat in categories" :key="cat.slug">
+                <option
+                  :value="cat.slug"
+                  x-text="cat.name + (cat.active ? '' : ' (neaktivní)')"
+                ></option>
+              </template>
+            </select>
+          </label>
+
+          <label>
+            Tag
+            <select x-model="selectedTag">
+              <option value="">Všechny tagy</option>
+              <template x-for="t in tags" :key="t.tag + '-' + t.group">
+                <option :value="t.tag" x-text="t.tag + ' (' + t.group + ')'"></option>
+              </template>
+            </select>
+          </label>
+
+          <label>
+            Hledat
+            <input
+              type="search"
+              x-model="searchQuery"
+              placeholder="Titulek nebo perex…"
+              autocomplete="off"
+            >
+          </label>
+
+          <button type="button" @click="resetFilters()">Zrušit filtry</button>
+        </section>
+
+        <!-- Počet zobrazených článků -->
+        <p>
+          Zobrazeno
+          <strong x-text="filteredArticles.length"></strong>
+          z
+          <span x-text="articles.length"></span>
+          článků
+        </p>
+
+        <!-- Seznam článků -->
+        <section aria-label="Články">
+          <template x-if="filteredArticles.length === 0">
+            <p>Žádné články neodpovídají filtrům.</p>
+          </template>
+
+          <template x-for="article in filteredArticles" :key="article.path">
+            <article>
+              <h2>
+                <a
+                  :href="article.url"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  x-text="article.title"
+                ></a>
+              </h2>
+
+              <p>
+                <span>Zdroj: <span x-text="article.source"></span></span>
+                ·
+                <span>
+                  Publikováno:
+                  <time :datetime="article.published || ''" x-text="article.published || '—'"></time>
+                </span>
+                ·
+                <span>
+                  Přidáno:
+                  <time :datetime="article.added || ''" x-text="article.added || '—'"></time>
+                </span>
+                ·
+                <span>
+                  Kategorie:
+                  <span x-text="categoryName(article.category)"></span>
+                </span>
+              </p>
+
+              <!-- Tagy – kliknutí nastaví filtr tagu -->
+              <p>
+                Tagy:
+                <template x-for="tag in (article.tags || [])" :key="article.path + '-' + tag">
+                  <button
+                    type="button"
+                    @click="selectedTag = tag"
+                    x-text="tag"
+                  ></button>
+                </template>
+              </p>
+
+              <p x-text="article.perex"></p>
+
+              <template x-if="article.why">
+                <div>
+                  <h3>Proč je to důležité</h3>
+                  <p x-text="article.why"></p>
+                </div>
+              </template>
+            </article>
+          </template>
+        </section>
+
+        <footer>
+          <p>
+            Data vygenerována:
+            <time :datetime="generatedAt" x-text="generatedAt || '—'"></time>
+          </p>
+        </footer>
+      </div>
+    </template>
+  </div>
+
+  <script>
+    /**
+     * Alpine komponenta newshubu.
+     * Načte data.json a filtruje články podle kategorie, tagu a fulltextu.
+     */
+    function newsHub() {
+      return {
+        // --- stav ---
+        loading: true,
+        error: null,
+        generatedAt: null,
+        categories: [],
+        tags: [],
+        articles: [],
+
+        // --- filtry (vázané na UI) ---
+        selectedCategory: '',
+        selectedTag: '',
+        searchQuery: '',
+
+        /** Načte data.json při startu stránky. */
+        async init() {
+          try {
+            const response = await fetch('data.json', { cache: 'no-cache' });
+            if (!response.ok) {
+              throw new Error('Nepodařilo se načíst data.json (HTTP ' + response.status + ').');
+            }
+            const data = await response.json();
+            this.generatedAt = data.generated_at || null;
+            this.categories = data.categories || [];
+            this.tags = data.tags || [];
+            this.articles = data.articles || [];
+            this.loading = false;
+          } catch (err) {
+            this.error = 'Chyba načítání: ' + (err && err.message ? err.message : String(err));
+            this.loading = false;
+          }
+        },
+
+        /** Lidský název kategorie podle slug; fallback na samotný slug. */
+        categoryName(slug) {
+          const found = this.categories.find(c => c.slug === slug);
+          return found ? found.name : slug;
+        },
+
+        /** Vyčistí všechny filtry. */
+        resetFilters() {
+          this.selectedCategory = '';
+          this.selectedTag = '';
+          this.searchQuery = '';
+        },
+
+        /**
+         * Odvozený seznam článků po aplikaci filtrů.
+         * Fulltext: title + perex (bez ohledu na velikost písmen).
+         */
+        get filteredArticles() {
+          const query = (this.searchQuery || '').trim().toLowerCase();
+
+          return this.articles.filter(article => {
+            if (this.selectedCategory && article.category !== this.selectedCategory) {
+              return false;
+            }
+            if (this.selectedTag) {
+              const tags = article.tags || [];
+              if (!tags.includes(this.selectedTag)) {
+                return false;
+              }
+            }
+            if (query) {
+              const title = (article.title || '').toLowerCase();
+              const perex = (article.perex || '').toLowerCase();
+              if (!title.includes(query) && !perex.includes(query)) {
+                return false;
+              }
+            }
+            return true;
+          });
+        },
+      };
+    }
+  </script>
+</body>
+</html>

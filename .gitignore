@@ -1,5 +1,7 @@
-# Generated site directory
+# Generated site directory (CI only – not committed)
 _site/
+data.json
+
 
 # Python
 __pycache__/

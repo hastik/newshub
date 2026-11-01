@@ -4,7 +4,7 @@ Kurátorovaná databáze důležitých novinek v oblastech logistiky, AI, Proces
 
 **Webová stránka:** [https://hastik.github.io/newshub/](https://hastik.github.io/newshub/)
 
-Statická webová stránka je automaticky generována při každém push do `main` větve a zobrazuje procházitelnou strukturu adresářů s vyrenderovanými články.
+Při každém push do `main` GitHub Actions spustí `scripts/build_data.py`, který sestaví `data.json` (články, kategorie, tagy) a nasadí ho spolu s `site/index.html` na GitHub Pages. Frontend je plain HTML + Alpine.js (bez CSS); `data.json` se necommituje, vzniká jen při deployi.
 
 ## Účel
 
@@ -35,9 +35,23 @@ newshub/
 │   ├── queue.md        – fronta studií (markdown)
 │   ├── queue.json      – fronta studií (JSON)
 │   └── YYYY-MM-DD-slug.md  – souhrny jednotlivých studií
+├── site/
+│   └── index.html      – Alpine.js frontend (načítá data.json)
 └── scripts/
-    └── check.py        – validátor (front matter, štítky, duplikáty)
+    ├── check.py        – validátor (front matter, štítky, duplikáty)
+    └── build_data.py   – sestaví data.json + zkopíruje index.html do _site/
 ```
+
+## Web (GitHub Pages)
+
+Zdroj stránky je GitHub Actions (workflow `.github/workflows/pages.yml`):
+
+1. `python scripts/build_data.py` načte `articles/`, `tasks/` a `tags.yml` (a `studies/`, pokud existuje)
+2. Zapíše `_site/data.json` a zkopíruje `site/index.html` do `_site/`
+3. Artifact `_site/` se nasadí přes `upload-pages-artifact` / `deploy-pages`
+
+Lokálně: `python scripts/build_data.py && python -m http.server -d _site 8000`
+
 
 ## Kategorie (tasks)
 
