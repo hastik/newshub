@@ -5,6 +5,7 @@ on:
     branches: [ main ]
     paths:
       - 'articles/**'
+      - 'studies/**'
       - 'tasks/**'
       - 'tags.yml'
       - 'scripts/check.py'
