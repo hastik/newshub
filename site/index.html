@@ -13,6 +13,8 @@
     ----------------
     Data přijdou z data.json (generuje scripts/build_data.py v CI).
     Filtry: kategorie (select), tag (select + klikací tagy), fulltext (title + perex).
+    Selecty kategorie a tagu se synchronizují do URL (?category=&tag=) přes History API
+    (bez reloadu; funguje tlačítko zpět/vpřed).
     Žádné styly záměrně – jen sémantické HTML a Alpine.
   -->
   <div x-data="newsHub()" x-init="init()">
@@ -154,6 +156,7 @@
     /**
      * Alpine komponenta newshubu.
      * Načte data.json a filtruje články podle kategorie, tagu a fulltextu.
+     * Selecty kategorie/tagu ↔ URL query (?category=&tag=) přes History API.
      */
     function newsHub() {
       return {
@@ -170,8 +173,17 @@
         selectedTag: '',
         searchQuery: '',
 
-        /** Načte data.json při startu stránky. */
+        // --- interní: sync URL bez smyčky a bez dvojitého pushState ---
+        _syncingFromUrl: false,
+        _urlSyncQueued: false,
+
+        /** Načte data.json a napojí filtry na URL / historii prohlížeče. */
         async init() {
+          this.applyFiltersFromUrl();
+          this.$watch('selectedCategory', () => this.queueUrlSync());
+          this.$watch('selectedTag', () => this.queueUrlSync());
+          window.addEventListener('popstate', () => this.applyFiltersFromUrl());
+
           try {
             const response = await fetch('data.json', { cache: 'no-cache' });
             if (!response.ok) {
@@ -189,13 +201,65 @@
           }
         },
 
+        /** Načte category/tag z aktuálního query stringu (init + tlačítko zpět/vpřed). */
+        applyFiltersFromUrl() {
+          const params = new URLSearchParams(window.location.search);
+          this._syncingFromUrl = true;
+          this.selectedCategory = params.get('category') || '';
+          this.selectedTag = params.get('tag') || '';
+          this._syncingFromUrl = false;
+        },
+
+        /**
+         * Seskupí více změn filtrů (např. reset) do jednoho pushState
+         * v rámci stejného microtasku.
+         */
+        queueUrlSync() {
+          if (this._syncingFromUrl || this._urlSyncQueued) return;
+          this._urlSyncQueued = true;
+          queueMicrotask(() => {
+            this._urlSyncQueued = false;
+            this.syncFiltersToUrl();
+          });
+        },
+
+        /** Zapíše aktuální selecty do URL bez reloadu (history.pushState). */
+        syncFiltersToUrl() {
+          if (this._syncingFromUrl) return;
+
+          const params = new URLSearchParams(window.location.search);
+          if (this.selectedCategory) {
+            params.set('category', this.selectedCategory);
+          } else {
+            params.delete('category');
+          }
+          if (this.selectedTag) {
+            params.set('tag', this.selectedTag);
+          } else {
+            params.delete('tag');
+          }
+
+          const qs = params.toString();
+          const next =
+            window.location.pathname +
+            (qs ? '?' + qs : '') +
+            window.location.hash;
+          const current =
+            window.location.pathname +
+            window.location.search +
+            window.location.hash;
+
+          if (next === current) return;
+          history.pushState(null, '', next);
+        },
+
         /** Lidský název kategorie podle slug; fallback na samotný slug. */
         categoryName(slug) {
           const found = this.categories.find(c => c.slug === slug);
           return found ? found.name : slug;
         },
 
-        /** Vyčistí všechny filtry. */
+        /** Vyčistí všechny filtry (selecty se propsí do URL přes watchery). */
         resetFilters() {
           this.selectedCategory = '';
           this.selectedTag = '';
