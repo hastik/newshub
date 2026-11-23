@@ -109,7 +109,7 @@
   },
   {
     "n": 10,
-    "status": "todo",
+    "status": "done",
     "topic": "cartonization",
     "title": "A decision-tree framework to select optimal box-sizes for product shipments",
     "authors": "K.S. Gurumoorthy, A. Hinge",
